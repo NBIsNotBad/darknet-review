@@ -195,13 +195,13 @@ void forward_network(network *netp)
 #endif
     network net = *netp;
     int i;
-    for(i = 0; i < net.n; ++i){
-        net.index = i;
+    for(i = 0; i < net.n; ++i){  // n layer
+        net.index = i;  // selet mem number id
         layer l = net.layers[i];
         if(l.delta){
-            fill_cpu(l.outputs * l.batch, 0, l.delta, 1);
+            fill_cpu(l.outputs * l.batch, 0, l.delta, 1);  // fill 0 in output
         }
-        l.forward(l, net);
+        l.forward(l, net);  // exec *func()
         net.input = l.output;
         if(l.truth) {
             net.truth = l.output;
@@ -501,7 +501,7 @@ float *network_predict(network *net, float *input)
     net->truth = 0;
     net->train = 0;
     net->delta = 0;
-    forward_network(net);
+    forward_network(net); // inference
     float *out = net->output;
     *net = orig;
     return out;

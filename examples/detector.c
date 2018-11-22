@@ -565,8 +565,8 @@ void test_detector(char *datacfg, char *cfgfile, char *weightfile, char *filenam
     char *name_list = option_find_str(options, "names", "data/names.list");
     char **names = get_labels(name_list);
 
-    image **alphabet = load_alphabet();
-    network *net = load_network(cfgfile, weightfile, 0);
+    image **alphabet = load_alphabet();   // create mem and load images to it
+    network *net = load_network(cfgfile, weightfile, 0);   // load weight data by shape of cfg file
     set_batch_network(net, 1);
     srand(2222222);
     double time;
@@ -575,7 +575,7 @@ void test_detector(char *datacfg, char *cfgfile, char *weightfile, char *filenam
     float nms=.45;
     while(1){
         if(filename){
-            strncpy(input, filename, 256);
+            strncpy(input, filename, 256);  // load image to input buff
         } else {
             printf("Enter Image Path: ");
             fflush(stdout);
@@ -583,8 +583,8 @@ void test_detector(char *datacfg, char *cfgfile, char *weightfile, char *filenam
             if(!input) return;
             strtok(input, "\n");
         }
-        image im = load_image_color(input,0,0);
-        image sized = letterbox_image(im, net->w, net->h);
+        image im = load_image_color(input,0,0); // image resize
+        image sized = letterbox_image(im, net->w, net->h);  // TODO
         //image sized = resize_image(im, net->w, net->h);
         //image sized2 = resize_max(im, net->w);
         //image sized = crop_image(sized2, -((net->w - sized2.w)/2), -((net->h - sized2.h)/2), net->w, net->h);
@@ -594,7 +594,7 @@ void test_detector(char *datacfg, char *cfgfile, char *weightfile, char *filenam
 
         float *X = sized.data;
         time=what_time_is_it_now();
-        network_predict(net, X);
+        network_predict(net, X);  // inference
         printf("%s: Predicted in %f seconds.\n", input, what_time_is_it_now()-time);
         int nboxes = 0;
         detection *dets = get_network_boxes(net, im.w, im.h, thresh, hier_thresh, 0, 1, &nboxes);
